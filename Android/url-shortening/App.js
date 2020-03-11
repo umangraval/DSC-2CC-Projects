@@ -54,7 +54,7 @@ fetch('https://api.rebrandly.com/v1/links', {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#fff000',
     alignItems: 'center',
     justifyContent: 'center',
   },
