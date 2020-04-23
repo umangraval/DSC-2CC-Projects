@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:offline_notes/inherited_widgets/note_inherited_widget.dart';
+import 'package:offline_notes/providers/note_provider.dart';
 
 enum NoteMode {
   Editing,
@@ -9,8 +9,9 @@ enum NoteMode {
 class Note extends StatefulWidget {
   
   final NoteMode noteMode;
-  final int index;
-  Note(this.noteMode, this.index);
+  final Map<String, dynamic> note;
+
+  Note(this.noteMode, this.note);
 
   @override
   _NoteState createState() => _NoteState();
@@ -21,13 +22,12 @@ class _NoteState extends State<Note> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _textController = TextEditingController();
   
-  List<Map<String, String>> get _notes => NoteInheritedWidget.of(context).notes;
 
  @override
   void didChangeDependencies() {
     if(widget.noteMode == NoteMode.Editing) {
-      _titleController.text = _notes[widget.index]['title'];
-      _textController.text = _notes[widget.index]['text'];
+      _titleController.text = widget.note['title'];
+      _textController.text = widget.note['text'];
     }
     super.didChangeDependencies();
   }
@@ -65,15 +65,16 @@ class _NoteState extends State<Note> {
                   final title = _titleController.text;
                     final text = _textController.text;
                   if(widget?.noteMode == NoteMode.Adding) {
-                    _notes.add({
-                      'title': title,
-                      'text': text
-                    });
+                   NoteProvider.insertNote({
+                     'title':title,
+                     'text': text
+                   });
                   } else if (widget?.noteMode == NoteMode.Editing) {
-                    _notes[widget.index] = {
-                      'title': title,
-                      'text': text
-                    };
+                    NoteProvider.updateNote({
+                      'id': widget.note['id'],
+                      'title': _titleController.text,
+                      'text': _textController.text
+                    });
                   }
                   Navigator.pop(context);
                 }),
@@ -81,8 +82,8 @@ class _NoteState extends State<Note> {
                   Navigator.pop(context);
                 }),
                 widget.noteMode == NoteMode.Editing ?
-                NoteButton('Delete', Colors.red, () {
-                  _notes.removeAt(widget.index);
+                NoteButton('Delete', Colors.red, () async {
+                  await NoteProvider.deleteNotes(widget.note['id']);
                   Navigator.pop(context);
                 }) : Container(),
             ],)

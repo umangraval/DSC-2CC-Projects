@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:offline_notes/inherited_widgets/note_inherited_widget.dart';
+import 'package:offline_notes/providers/note_provider.dart';
 import 'note.dart';
 
 class NoteList extends StatefulWidget {
@@ -9,41 +9,47 @@ class NoteList extends StatefulWidget {
 
 class _NoteListState extends State<NoteList> {
 
-
-  List<Map<String, String>> get notes => NoteInheritedWidget.of(context).notes;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Notes'),
       ),
-      body: ListView.builder(
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-              context, 
-              MaterialPageRoute(builder: (context) => Note(NoteMode.Editing, index))
+      body: FutureBuilder(
+        future: NoteProvider.getNoteList(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            final notes = snapshot.data;
+          return ListView.builder(
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                  context, 
+                  MaterialPageRoute(builder: (context) => Note(NoteMode.Editing, notes[index]))
+                  );
+                },
+                          child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 30, bottom: 30, left: 13, right: 13),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        NoteTitle(notes[index]['title']),
+                        Container(height:4),
+                        NoteText(notes[index]['text'])
+                      ],
+                    ),
+                  )
+                ),
               );
             },
-                      child: Card(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 30, bottom: 30, left: 13, right: 13),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    NoteTitle(notes[index]['title']),
-                    Container(height:4),
-                    NoteText(notes[index]['text'])
-                  ],
-                ),
-              )
-            ),
-          );
-        },
-        itemCount: notes.length,
-        ),
+            itemCount: notes.length,
+            );
+          }
+          return Center(child: CircularProgressIndicator());
+        }
+      ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(
