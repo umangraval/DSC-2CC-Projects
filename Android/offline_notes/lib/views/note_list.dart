@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:offline_notes/inherited_widgets/note_inherited_widget.dart';
 import 'note.dart';
 
-class NoteList extends StatelessWidget {
+class NoteList extends StatefulWidget {
+  @override
+  _NoteListState createState() => _NoteListState();
+}
+
+class _NoteListState extends State<NoteList> {
+
+
+  List<Map<String, String>> get notes => NoteInheritedWidget.of(context).notes;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,7 +24,7 @@ class NoteList extends StatelessWidget {
             onTap: () {
               Navigator.push(
               context, 
-              MaterialPageRoute(builder: (context) => Note(NoteMode.Editing))
+              MaterialPageRoute(builder: (context) => Note(NoteMode.Editing, index))
               );
             },
                       child: Card(
@@ -23,21 +33,22 @@ class NoteList extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    NoteTitle(),
+                    NoteTitle(notes[index]['title']),
                     Container(height:4),
-                    NoteText()
+                    NoteText(notes[index]['text'])
                   ],
                 ),
               )
             ),
           );
-        }
+        },
+        itemCount: notes.length,
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(
               context, 
-              MaterialPageRoute(builder: (context) => Note(NoteMode.Adding))
+              MaterialPageRoute(builder: (context) => Note(NoteMode.Adding, null))
               );
           },
           child: Icon(Icons.add),
@@ -47,10 +58,14 @@ class NoteList extends StatelessWidget {
 }
 
 class NoteTitle extends StatelessWidget {
+  final String _title;
+
+  NoteTitle(this._title);
+
   @override
   Widget build(BuildContext context) {
     return Text(
-            'title',
+            _title,
             style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.bold
@@ -60,10 +75,13 @@ class NoteTitle extends StatelessWidget {
 }
 
 class NoteText extends StatelessWidget {
+  final String _text;
+
+  NoteText(this._text);
   @override
   Widget build(BuildContext context) {
     return Text(
-                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+                    _text,
                     style: TextStyle(
                       color: Colors.grey,
                     ),
