@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Blank Template",
+    "name": "URL Shortner",
     "slug": "url-shortening",
     "privacy": "public",
     "sdkVersion": "36.0.0",

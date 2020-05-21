@@ -36,6 +36,8 @@ fetch('https://api.rebrandly.com/v1/links', {
   render() {
     return (
       <View style={styles.container}>
+      <Text>URL Shortener</Text>
+        
         <TextInput
           style={{height: 40}}
           placeholder="Enter URL here!"
