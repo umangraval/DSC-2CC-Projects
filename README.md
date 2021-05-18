@@ -6,5 +6,3 @@
     App for URL Shortening
     App for Note making
 
-
->Bank Transaction backend project is not under consideration
